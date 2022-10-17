@@ -1,9 +1,10 @@
 use proc_macro2::TokenStream;
 use quote::{quote, quote_spanned};
-use syn::spanned::Spanned;
+
 use syn::{
-    parse_macro_input, parse_quote, Data, DeriveInput, Fields, GenericParam, Generics, Index,
+    Data, DeriveInput, Fields, GenericParam, Generics, Index, parse_macro_input, parse_quote,
 };
+use syn::spanned::Spanned;
 
 #[proc_macro_derive(HeapSize)]
 pub fn derive_heap_size(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
@@ -14,11 +15,11 @@ pub fn derive_heap_size(input: proc_macro::TokenStream) -> proc_macro::TokenStre
     let name = input.ident;
 
     // Add a bound `T: HeapSize` to every type parameter T.
-    let generics = add_trait_bounds(input.generics);
+    let generics = self::add_trait_bounds(input.generics);
     let (impl_generics, ty_generics, where_clause) = generics.split_for_impl();
 
     // Generate an expression to sum up the heap size of each field.
-    let sum = heap_size_sum(&input.data);
+    let sum = self::heap_size_sum(&input.data);
 
     let expanded = quote! {
         // The generated impl.
